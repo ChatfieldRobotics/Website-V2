@@ -1,0 +1,33 @@
+/* Dropdown animation */
+.dropdown {
+    max-height: 0; /* Initially collapsed */
+    overflow: hidden; /* Hide overflowing content */
+    transition: max-height 0.5s ease-in-out; /* Smooth height transition */
+}
+
+.dropdown-expanded {
+    max-height: 500px; /* Expanded height (adjust as needed) */
+}
+
+.bg-blur {
+    position: relative;
+}
+
+.bg-blur::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/csh-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: blur(4px) brightness(0.8);
+    z-index: -1;
+}
+
+body {
+
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
