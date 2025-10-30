@@ -62,7 +62,7 @@ function Footer() {
               </li>
               <li>
                 <a className="text-[#F4A261] hover:text-[#E9C46A] transition" href="#">
-                  Daniel Daniel
+                  Daniel Brunson
                 </a>
               </li>
             </ul>

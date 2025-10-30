@@ -79,14 +79,14 @@ export default function NavBar() {
       <div className="max-w-7xl mx-auto flex items-center justify-center relative">
         {/* Left: Donate */}
         <div className="absolute left-0 px-4">
-          <Link to="/donate">
+          <a href="https://buy.stripe.com/14AdR95mUbQp9ir1Vh3cc00">
             <button
               type="button"
               className="border-2 px-3 sm:px-4 md:px-6 py-2 rounded-md bg-[#E9C46A] hover:bg-[#F4A261] text-black font-semibold transition transform hover:scale-105 text-sm md:text-base"
             >
               Donate
             </button>
-          </Link>
+          </a>
         </div>
 
         {/* Center: Title */}
