@@ -156,18 +156,17 @@ export default function Members() {
 
         {/* Evan Pacic */}
         <div id="evan-pacic" className={cardBase}>
-          <img src="/images/team_members/NEEDTOGET.jpg" className={imgBase} />
+          <img src="/images/team_members/placeholder.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Evan Pacic</p>
-            <p className="text-base sm:text-[18px] font-bold mb-2">Mentor</p>
+            <p className="font-bold text-base sm:text-[18px] mb-2">Mentor</p>
             <p>
-              I’m Evan, a mechanical mentor. Right now I’m an undergrad in mechanical
-              engineering, and I cherish my experience in FRC as a student, so I’m here
-              to help current students get the most out of it. I believe robotics is a
-              huge collaborative engineering challenge, and I love the tight community
-              that comes with it. My favorite color is blue. In five years, I hope I’m
-              working in something related to robotics or controls. What motivates me is
-              that sense of community, learning, and passing on what I’ve gained.
+              Hi, I’m Evan — a mechanical mentor and current mechanical engineering
+              undergrad. I think robotics is an amazing large-scale collaborative
+              challenge, and I love the sense of teamwork and problem-solving that comes
+              with it. My favorite color is blue. In five years, I hope to be working in
+              a field related to robotics or controls. What motivates me is the chance
+              to keep learning, share knowledge, and build community through engineering.
             </p>
           </div>
         </div>
@@ -207,8 +206,25 @@ export default function Members() {
           </div>
         </div>
 
+        {/* Joey Huter */}
+        <div id="joey-huter" className={cardAlt}>
+          <img src="/images/team_members/placeholder.jpg" className={imgBase} />
+          <div className={textBase}>
+            <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Joey Huter</p>
+            <p className="text-base sm:text-[18px] mb-2">Undecided</p>
+            <p>
+              Hey, I’m Joey — a pretty cool fella who loves figuring out how things
+              work. I enjoy taking things apart and putting them back together, and
+              that’s what makes robotics fun for me. My favorite color is blue. In five
+              years, I see myself in college, still exploring how things are built and
+              what makes them tick. What motivates me is setting goals and achieving
+              them — that feeling of progress is what keeps me going.
+            </p>
+          </div>
+        </div>
+
         {/* Katie Stanley */}
-        <div id="katie-stanley" className={cardAlt}>
+        <div id="katie-stanley" className={cardBase}>
           <img src="/images/team_members/Katie_Stanley.jpeg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Katie Stanley</p>
@@ -228,7 +244,7 @@ export default function Members() {
         </div>
 
         {/* Keegan O'Neil */}
-        <div id="keegan-oneil" className={cardBase}>
+        <div id="keegan-oneil" className={cardAlt}>
           <img src="/images/team_members/Keegan_O'Neil.jpeg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Keegan O'Neil</p>
@@ -245,7 +261,7 @@ export default function Members() {
         </div>
 
         {/* Liam Martin */}
-        <div id="liam-martin" className={cardAlt}>
+        <div id="liam-martin" className={cardBase}>
           <img src="/images/team_members/STILLNEED.jpeg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Liam Martin</p>
@@ -261,7 +277,7 @@ export default function Members() {
         </div>
 
         {/* Quinn Johnson */}
-        <div id="quinn-johnson" className={cardBase}>
+        <div id="quinn-johnson" className={cardAlt}>
           <img src="/images/team_members/Quinn_Johnson.jpeg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
@@ -280,7 +296,7 @@ export default function Members() {
         </div>
 
         {/* Tyler Bergsma */}
-        <div id="tyler-bergsma" className={cardAlt}>
+        <div id="tyler-bergsma" className={cardBase}>
           <img src="/images/team_members/Tyler_Bergsma.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
