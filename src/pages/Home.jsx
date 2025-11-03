@@ -3,7 +3,7 @@ import Carousel from '/src/components/Carousel'
 export default function Home() {
     return (
         <>
-            <Carousel images="/images/Carousel_1.jpg,/images/Carousel_2.jpg,/images/Carousel_3.jpg"></Carousel>
+            <Carousel folder="carousel"></Carousel>
             <br/>
             
             

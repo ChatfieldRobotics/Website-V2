@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -8,6 +9,12 @@ function Footer() {
         <div className="text-center mb-6">
           <p className="text-[#E9C46A] font-semibold text-lg">
             2025 Chatfield Robotics
+          </p>
+          <br/>
+          <p className="text-[#F4A261] font-light">
+            <Link to="/upload" className="hover:underline">
+              Upload Images
+            </Link>
           </p>
         </div>
 

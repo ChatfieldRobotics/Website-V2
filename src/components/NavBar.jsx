@@ -53,8 +53,8 @@ export default function NavBar() {
 
   // Alphabetically sorted members (first name)
   const members = [
-    { name: "Andrew", id: "andrew-albright" },
     { name: "Andy", id: "andy-he" },
+    { name: "Andrew", id: "andrew-albright" },
     { name: "Anna", id: "annabelle-tanaka" },
     { name: "Azariah", id: "azariah-adams-pacheco" },
     { name: "Bill", id: "bill-kendall" },

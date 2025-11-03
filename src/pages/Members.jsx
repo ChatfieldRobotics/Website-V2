@@ -38,7 +38,7 @@ export default function Members() {
 
         {/* Andy He */}
         <div id="andy-he" className={cardBase}>
-          <img src="/images/team_members/Andy_He.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139420/Andy_He_fsqohr.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Andy He</p>
             <p className="text-base sm:text-[18px] mb-2">Programming</p>
@@ -57,7 +57,7 @@ export default function Members() {
 
         {/* Andrew Albright */}
         <div id="andrew-albright" className={cardAlt}>
-          <img src="/images/team_members/Andrew_Albright.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139421/Andrew_Albright_eh1jdi.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
               Andrew Albright
@@ -68,7 +68,7 @@ export default function Members() {
               engineer. What really pulls me into robotics is the problem solving —
               taking something complex, breaking it down, and making it work. My
               favorite color is brown. In five years I hope to be either in college or
-              pushing limits until I’m, well, “dead from trying.” What drives me, both
+              pushing limits
               in robotics and in life, is my love for the game — the thrill of
               challenging myself and seeing results.
             </p>
@@ -77,7 +77,7 @@ export default function Members() {
 
         {/* Annabelle Tanaka */}
         <div id="annabelle-tanaka" className={cardBase}>
-          <img src="/images/team_members/Annabelle_Tanaka.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139423/Annabelle_Tanaka_gfvp3z.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
               Annabelle Tanaka
@@ -99,7 +99,7 @@ export default function Members() {
 
         {/* Azariah Adams-Pacheco */}
         <div id="azariah-adams-pacheco" className={cardAlt}>
-          <img src="/images/team_members/Azariah_Adams-Pacheco.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139426/Azariah_Adams-Pacheco_fktwpg.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
               Azariah Adams-Pacheco
@@ -120,7 +120,7 @@ export default function Members() {
 
         {/* Bill Kendall */}
         <div id="bill-kendall" className={cardBase}>
-          <img src="/images/team_members/Bill_Kendall.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139421/Bill_Kendall_i77mfi.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Bill Kendall</p>
             <p className="text-base sm:text-[18px] font-bold mb-2">Mentor</p>
@@ -137,7 +137,7 @@ export default function Members() {
 
         {/* Daniel Brunson */}
         <div id="daniel-brunson" className={cardAlt}>
-          <img src="/images/team_members/Daniel_Brunson.jpeg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139420/Daniel_Brunson_zix0cg.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
               Daniel Brunson
@@ -173,7 +173,7 @@ export default function Members() {
 
         {/* Henry Wagner */}
         <div id="henry-wagner" className={cardAlt}>
-          <img src="/images/team_members/Henry_Wagner.png" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139416/Henry_Wagner_ddopdk.png" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Henry Wagner</p>
             <p className="text-base sm:text-[18px] mb-2">Programming Lead</p>
@@ -208,7 +208,7 @@ export default function Members() {
 
         {/* Joey Huter */}
         <div id="joey-huter" className={cardAlt}>
-          <img src="/images/team_members/placeholder.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139840/Joey_Huter_elgirm.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Joey Huter</p>
             <p className="text-base sm:text-[18px] mb-2">Undecided</p>
@@ -225,7 +225,7 @@ export default function Members() {
 
         {/* Katie Stanley */}
         <div id="katie-stanley" className={cardBase}>
-          <img src="/images/team_members/Katie_Stanley.jpeg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139417/Katie_Stanley_hc0sx5.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Katie Stanley</p>
             <p className="text-base sm:text-[18px] mb-2">
@@ -245,7 +245,7 @@ export default function Members() {
 
         {/* Keegan O'Neil */}
         <div id="keegan-oneil" className={cardAlt}>
-          <img src="/images/team_members/Keegan_O'Neil.jpeg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139416/Keegan_O_Neil_ozrpnb.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Keegan O'Neil</p>
             <p className="text-base sm:text-[18px] mb-2">Mechanical</p>
@@ -262,7 +262,7 @@ export default function Members() {
 
         {/* Liam Martin */}
         <div id="liam-martin" className={cardBase}>
-          <img src="/images/team_members/STILLNEED.jpeg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139976/Liam_Martin_ir6ed9.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Liam Martin</p>
             <p className="text-base sm:text-[18px] mb-2">Mechanical</p>
@@ -278,7 +278,7 @@ export default function Members() {
 
         {/* Quinn Johnson */}
         <div id="quinn-johnson" className={cardAlt}>
-          <img src="/images/team_members/Quinn_Johnson.jpeg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139421/Quinn_Johnson_bli5or.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
               Quinn Johnson
@@ -297,7 +297,7 @@ export default function Members() {
 
         {/* Tyler Bergsma */}
         <div id="tyler-bergsma" className={cardBase}>
-          <img src="/images/team_members/Tyler_Bergsma.jpg" className={imgBase} />
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139415/Tyler_Bergsma_j4uarq.jpg" className={imgBase} />
           <div className={textBase}>
             <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
               Tyler Bergsma

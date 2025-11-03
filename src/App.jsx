@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Members from "./pages/Members";
 import Programs from "./pages/Programs";
 import Donate from "./pages/Donate";
+import Upload from "./pages/Upload";
 
 export default function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ export default function App() {
               <Route path="/members" element={<Members />} />
               <Route path="/programs" element={<Programs />} />
               <Route path="/donate" element={<Donate />} />
+              <Route path="/upload" element={<Upload />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
