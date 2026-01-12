@@ -206,22 +206,6 @@ export default function Members() {
           </div>
         </div>
 
-        {/* Joey Huter */}
-        <div id="joey-huter" className={cardAlt}>
-          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139840/Joey_Huter_elgirm.jpg" className={imgBase} />
-          <div className={textBase}>
-            <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">Joey Huter</p>
-            <p className="text-base sm:text-[18px] mb-2">Undecided</p>
-            <p>
-              Hey, I’m Joey — a pretty cool fella who loves figuring out how things
-              work. I enjoy taking things apart and putting them back together, and
-              that’s what makes robotics fun for me. My favorite color is blue. In five
-              years, I see myself in college, still exploring how things are built and
-              what makes them tick. What motivates me is setting goals and achieving
-              them — that feeling of progress is what keeps me going.
-            </p>
-          </div>
-        </div>
 
         {/* Katie Stanley */}
         <div id="katie-stanley" className={cardBase}>
