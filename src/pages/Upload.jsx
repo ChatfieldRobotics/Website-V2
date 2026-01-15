@@ -13,6 +13,7 @@ export default function Upload() {
     { name: "Image Carousel", value: "upload-carousel" },
     { name: "2024 Season", value: "upload-season_2024" },
     { name: "2025 Season", value: "upload-season_2025" },
+    { name: "2026 Season", value: "upload-season_2026" },
   ];
 
   // Password hash for access (sha256 of your password)

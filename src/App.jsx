@@ -7,6 +7,7 @@ import Members from "./pages/Members";
 import Programs from "./pages/Programs";
 import Donate from "./pages/Donate";
 import Upload from "./pages/Upload";
+import SeasonImages from "./pages/SeasonImages";
 
 export default function App() {
   const location = useLocation();
@@ -31,6 +32,8 @@ export default function App() {
               <Route path="/programs" element={<Programs />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/upload" element={<Upload />} />
+              <Route path="/season2025" element={<SeasonImages season="2025"/>} />
+              <Route path="/season2026" element={<SeasonImages season="2026"/>} />
             </Routes>
           </motion.div>
         </AnimatePresence>
