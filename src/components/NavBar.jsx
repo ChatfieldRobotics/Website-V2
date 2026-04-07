@@ -72,17 +72,17 @@ export default function NavBar() {
   return (
     <header
       ref={navRef}
-      className="fixed top-0 left-0 w-full bg-[#264653] bg-opacity-95 rounded-b-md px-4 py-3 shadow-md z-50"
+      className="fixed top-0 left-0 w-full bg-[#264653] bg-opacity-95 rounded-b-md px-2 sm:px-4 py-3 shadow-md z-50"
       aria-label="Main navigation"
     >
       {/* Top bar: Left/Center/Right */}
-      <div className="max-w-7xl mx-auto flex items-center justify-center relative">
+      <div className="max-w-7xl mx-auto flex items-center justify-between sm:justify-center relative">
         {/* Left: Donate */}
-        <div className="absolute left-0 px-4">
+        <div className="sm:absolute sm:left-0 sm:px-4">
           <a href="https://buy.stripe.com/14AdR95mUbQp9ir1Vh3cc00">
             <button
               type="button"
-              className="border-2 px-3 sm:px-4 md:px-6 py-2 rounded-md bg-[#E9C46A] hover:bg-[#F4A261] text-black font-semibold transition transform hover:scale-105 text-sm md:text-base"
+              className="border-2 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-md bg-[#E9C46A] hover:bg-[#F4A261] text-black font-semibold transition transform hover:scale-105 text-xs sm:text-sm md:text-base whitespace-nowrap"
             >
               Donate
             </button>
@@ -90,10 +90,10 @@ export default function NavBar() {
         </div>
 
         {/* Center: Title */}
-        <div className="text-center">
+        <div className="text-center flex-grow sm:flex-grow-0 ml-2 sm:ml-0">
           <Link
             to="/"
-            className="text-[#E9C46A] text-2xl md:text-4xl font-bold hover:underline transform transition duration-200"
+            className="text-[#E9C46A] text-lg sm:text-2xl md:text-4xl font-bold hover:underline transform transition duration-200"
             aria-current="page"
           >
             Chatfield Robotics
@@ -102,7 +102,7 @@ export default function NavBar() {
       </div>
 
       {/* Navigation buttons */}
-      <nav className="mt-3 md:mt-4 flex justify-center space-x-3 md:space-x-4">
+      <nav className="mt-3 md:mt-4 flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4">
         {/* Calendar */}
         <a
           href="https://calendar.google.com/calendar/u/0/embed?color=%23800020&color=%23c0c0c0&src=8ddebaee3e9e7b072ea36083c54675d03e54b2029075ff497f444ff3318a793e@group.calendar.google.com&src=chatfieldrobotics@gmail.com"
@@ -126,7 +126,7 @@ export default function NavBar() {
             Media ▾
           </button>
           {openDropdown === "media" && (
-            <div className="absolute left-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[10rem]">
+            <div className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[10rem]">
               <a href="/seasonImages/2025.html" className="block px-4 py-2 hover:bg-gray-100">
                 2025
               </a>
@@ -149,10 +149,10 @@ export default function NavBar() {
             Programs ▾
           </button>
           {openDropdown === "programs" && (
-            <div className="absolute left-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[10rem]">
-              <a href="signupForm.html" className="block px-4 py-2 hover:bg-gray-100">
+            <div className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[10rem]">
+              <Link to="https://book.stripe.com/4gM3cvg1yf2B1PZ9nJ3cc01" className="block px-4 py-2 hover:bg-gray-100">
                 Summer Camp
-              </a>
+              </Link>
               <a href="scouting.html" className="block px-4 py-2 hover:bg-gray-100">
                 Scouting
               </a>
@@ -175,10 +175,10 @@ export default function NavBar() {
             Members ▾
           </button>
           {openDropdown === "members" && (
-            <div className="absolute left-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[12rem]">
+            <div className="absolute left-1/2 -translate-x-1/2 sm:right-0 sm:left-auto sm:translate-x-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[12rem] max-h-[60vh] overflow-y-auto">
               <Link
                 to="/members"
-                className="block px-4 py-2 hover:bg-gray-100"
+                className="block px-4 py-2 hover:bg-gray-100 font-semibold border-b"
                 onClick={() => setOpenDropdown(null)}
               >
                 View All

@@ -171,6 +171,20 @@ export default function Members() {
           </div>
         </div>
 
+        {/* Ross Parrent */}
+        <div id="Ross-parrent" className={cardAlt}>
+          <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139420/Daniel_Brunson_zix0cg.jpg" className={imgBase} />
+          <div className={textBase}>
+            <p className="text-lg sm:text-xl font-semibold text-[#E9C46A]">
+              Daniel Brunson
+            </p>
+            <p className="text-base sm:text-[18px] font-bold mb-2">Mentor</p>
+            <p>
+              I'm Ross, a mentor. What draws me to this role is the chance to watch students grow and tackle challenges while sharing the professional experience I've built over the years. My favorite color is blue. In five years, I hope to be pushing the boundaries of large scale, technology infrastructure. What motivates me most is the relationships I build with the students along the way.
+            </p>
+          </div>
+        </div>
+
         {/* Henry Wagner */}
         <div id="henry-wagner" className={cardAlt}>
           <img src="https://res.cloudinary.com/dfe5w9fih/image/upload/v1762139416/Henry_Wagner_ddopdk.png" className={imgBase} />

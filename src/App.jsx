@@ -34,6 +34,7 @@ export default function App() {
               <Route path="/upload" element={<Upload />} />
               <Route path="/season2025" element={<SeasonImages season="2025"/>} />
               <Route path="/season2026" element={<SeasonImages season="2026"/>} />
+              <Route path="/summerCamp" element={<summerCamp />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
