@@ -9,16 +9,18 @@ export default function Upload() {
 
   // Map preset names to readable labels
   const uploadPresets = [
-    { name: "Test", value: "website-test" },
+    // { name: "Test", value: "website-test" },
     { name: "Image Carousel", value: "upload-carousel" },
     { name: "2024 Season", value: "upload-season_2024" },
     { name: "2025 Season", value: "upload-season_2025" },
     { name: "2026 Season", value: "upload-season_2026" },
+    { name: "Assorted Images", value: "assorted-images" },
+    { name: "Summer Camp", value: "summer-camp" },
   ];
 
   // Password hash for access (sha256 of your password)
   const VALID_HASH =
-    "792c7128a2acde13f4522cf4eb17342db5849411ca817091c9c213d8eb27e014";
+    "e93ac3033638dbee6a914f6ad14c447a02a2dd3b6a2072721e25b30b609d1fb8";
 
   // Check localStorage for persistent auth
   useEffect(() => {
