@@ -1,18 +1,49 @@
 // src/components/NavBar.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+
+const PILL =
+  "border border-[#8E1717] bg-transparent hover:bg-[#C62828]/10 hover:border-[#C62828] text-[#F5F5F5] px-3 sm:px-5 py-1 rounded-full uppercase tracking-wider transition-all duration-300 text-xs sm:text-sm font-semibold";
+
+// Same spring as the homepage rows: stiff, slightly under-damped
+const SPRING = { type: "spring", stiffness: 300, damping: 14, mass: 0.5 };
+
+const CLOSED = "inset(0% 0% 100% 0% round 0.75rem)";
+const OPEN = "inset(0% 0% 0% 0% round 0.75rem)";
+
+const DROPDOWN = {
+  hidden: { y: -12 },
+  show: { y: 0, transition: SPRING },
+  exit: { y: -12, transition: { duration: 0.18, ease: "easeIn" } },
+};
+
+const WIPE = {
+  hidden: { clipPath: CLOSED },
+  show: {
+    clipPath: OPEN,
+    transition: { ...SPRING, staggerChildren: 0.06, delayChildren: 0.08 },
+  },
+  exit: { clipPath: CLOSED, transition: { duration: 0.18, ease: "easeIn" } },
+};
+
+const ITEM = {
+  hidden: { x: 40, opacity: 0 },
+  show: { x: 0, opacity: 1, transition: SPRING },
+};
+
+const ITEM_LINK =
+  "block px-4 py-2 text-[#F5F5F5] hover:bg-[#8E1717] transition-colors font-medium text-center";
 
 export default function NavBar() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const navRef = useRef(null);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const toggleDropdown = (name) => {
     setOpenDropdown((prev) => (prev === name ? null : name));
   };
 
-  // Close dropdowns when clicking outside the navbar
+  // Close dropdowns clicking outside the navbar
   useEffect(() => {
     const handleDocClick = (e) => {
       const el = navRef.current;
@@ -25,177 +56,117 @@ export default function NavBar() {
     return () => document.removeEventListener("mousedown", handleDocClick);
   }, []);
 
-  // Smooth scroll with offset (so section starts 4–5 lines below top)
-  const scrollToMember = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -80; // adjust for navbar height / desired spacing
-      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  };
-
-  // Navigate to /members then scroll with offset
-  const goToMember = (id) => {
-    setOpenDropdown(null);
-
-    if (location.pathname === "/members") {
-      // Already on page — just scroll
-      scrollToMember(id);
-    } else {
-      // Go to /members first, then scroll after navigation
-      navigate(`/members`);
-      setTimeout(() => {
-        scrollToMember(id);
-      }, 300);
-    }
-  };
-
-  // Alphabetically sorted members (first name)
-  const members = [
-    { name: "Andy", id: "andy-he" },
-    { name: "Andrew", id: "andrew-albright" },
-    { name: "Anna", id: "annabelle-tanaka" },
-    { name: "Azariah", id: "azariah-adams-pacheco" },
-    { name: "Bill", id: "bill-kendall" },
-    { name: "Daniel B", id: "daniel-brunson" },
-    { name: "Evan", id: "evan-pacic" },
-    { name: "Henry", id: "henry-wagner" },
-    { name: "Jamie", id: "jamie-head" },
-    { name: "Katie", id: "katie-stanley" },
-    { name: "Keegan", id: "keegan-oneil" },
-    { name: "Liam", id: "liam-martin" },
-    { name: "Quinn", id: "quinn-johnson" },
-    { name: "Tyler", id: "tyler-bergsma" },
-  ];
+  const programsOpen = openDropdown === "programs";
 
   return (
     <header
       ref={navRef}
-      className="fixed top-0 left-0 w-full bg-[#264653] bg-opacity-95 rounded-b-md px-2 sm:px-4 py-3 shadow-md z-50"
+      className="fixed top-0 left-0 w-full bg-[#10151D] bg-opacity-95 border-b border-[#8E1717] shadow-[0_4px_15px_rgba(0,0,0,0.5)] z-50 font-['Rajdhani',_sans-serif] pb-3 pt-2 sm:pt-4"
       aria-label="Main navigation"
     >
-      {/* Top bar: Left/Center/Right */}
-      <div className="max-w-7xl mx-auto flex items-center justify-between sm:justify-center relative">
-        {/* Left: Donate */}
-        <div className="sm:absolute sm:left-0 sm:px-4">
-          <a href="https://buy.stripe.com/14AdR95mUbQp9ir1Vh3cc00">
-            <button
-              type="button"
-              className="border-2 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-md bg-[#E9C46A] hover:bg-[#F4A261] text-black font-semibold transition transform hover:scale-105 text-xs sm:text-sm md:text-base whitespace-nowrap"
-            >
-              Donate
-            </button>
-          </a>
-        </div>
-
-        {/* Center: Title */}
-        <div className="text-center flex-grow sm:flex-grow-0 ml-2 sm:ml-0">
-          <Link
-            to="/"
-            className="text-[#E9C46A] text-lg sm:text-2xl md:text-4xl font-bold hover:underline transform transition duration-200"
-            aria-current="page"
-          >
-            Chatfield Robotics
-          </Link>
-        </div>
+      {/* Top Tier: Title */}
+      <div className="max-w-7xl mx-auto flex items-center justify-center px-4 sm:px-6 mb-3 sm:mb-4">
+        <Link
+          to="/"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide transform transition duration-200 flex gap-2"
+          aria-current="page"
+        >
+          <span className="text-[#F5F5F5]">CHATFIELD</span>
+          <span className="text-[#C62828]">ROBOTICS</span>
+        </Link>
       </div>
 
-      {/* Navigation buttons */}
-      <nav className="mt-3 md:mt-4 flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4">
-        {/* Calendar */}
-        <a
-          href="https://calendar.google.com/calendar/u/0/embed?color=%23800020&color=%23c0c0c0&src=8ddebaee3e9e7b072ea36083c54675d03e54b2029075ff497f444ff3318a793e@group.calendar.google.com&src=chatfieldrobotics@gmail.com"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button className="bg-[#8B1E3F] hover:bg-[#F4A261] px-3 py-2 rounded-md text-white transition transform hover:scale-105 text-sm md:text-base">
+      {/* Bottom Tier: Navigation Links */}
+      <MotionConfig reducedMotion="user">
+        <nav className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 px-2">
+          <a
+            href="https://calendar.google.com/calendar/u/0/embed?color=%23800020&color=%23c0c0c0&src=8ddebaee3e9e7b072ea36083c54675d03e54b2029075ff497f444ff3318a793e@group.calendar.google.com&src=chatfieldrobotics@gmail.com"
+            target="_blank"
+            rel="noreferrer"
+            className={PILL}
+          >
             Calendar
-          </button>
-        </a>
+          </a>
 
-        {/* Media Dropdown */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => toggleDropdown("media")}
-            className="bg-[#8B1E3F] hover:bg-[#F4A261] px-3 py-2 rounded-md text-white transition transform hover:scale-105 text-sm md:text-base"
-            aria-expanded={openDropdown === "media"}
-            aria-haspopup="true"
-          >
-            Media ▾
-          </button>
-          {openDropdown === "media" && (
-            <div className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[10rem]">
-              <a href="/seasonImages/2025.html" className="block px-4 py-2 hover:bg-gray-100">
-                2025
-              </a>
-              <a href="/seasonImages/2024.html" className="block px-4 py-2 hover:bg-gray-100">
-                2024
-              </a>
-            </div>
-          )}
-        </div>
-
-        {/* Programs Dropdown */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => toggleDropdown("programs")}
-            className="bg-[#8B1E3F] hover:bg-[#F4A261] px-3 py-2 rounded-md text-white transition transform hover:scale-105 text-sm md:text-base"
-            aria-expanded={openDropdown === "programs"}
-            aria-haspopup="true"
-          >
-            Programs ▾
-          </button>
-          {openDropdown === "programs" && (
-            <div className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[10rem]">
-              <Link to="https://book.stripe.com/4gM3cvg1yf2B1PZ9nJ3cc01" className="block px-4 py-2 hover:bg-gray-100">
-                Summer Camp
-              </Link>
-              <a href="scouting.html" className="block px-4 py-2 hover:bg-gray-100">
-                Scouting
-              </a>
-              <a href="fundraisers.html" className="block px-4 py-2 hover:bg-gray-100">
-                Fundraisers
-              </a>
-            </div>
-          )}
-        </div>
-
-        {/* Members Dropdown */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => toggleDropdown("members")}
-            className="bg-[#8B1E3F] hover:bg-[#F4A261] px-3 py-2 rounded-md text-white transition transform hover:scale-105 text-sm md:text-base"
-            aria-expanded={openDropdown === "members"}
-            aria-haspopup="true"
-          >
-            Members ▾
-          </button>
-          {openDropdown === "members" && (
-            <div className="absolute left-1/2 -translate-x-1/2 sm:right-0 sm:left-auto sm:translate-x-0 mt-2 bg-white border rounded-md shadow-lg z-10 min-w-[12rem] max-h-[60vh] overflow-y-auto">
-              <Link
-                to="/members"
-                className="block px-4 py-2 hover:bg-gray-100 font-semibold border-b"
-                onClick={() => setOpenDropdown(null)}
+          {/* Programs Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => toggleDropdown("programs")}
+              className={PILL}
+              aria-expanded={programsOpen}
+              aria-haspopup="true"
+            >
+              Programs{" "}
+              <motion.span
+                animate={{ rotate: programsOpen ? 180 : 0 }}
+                transition={SPRING}
+                className="inline-block text-[#C62828] ml-1"
               >
-                View All
-              </Link>
-              {members.map((member) => (
-                <button
-                  key={member.id}
-                  onClick={() => goToMember(member.id)}
-                  className="block text-left w-full px-4 py-2 hover:bg-gray-100"
+                ▾
+              </motion.span>
+            </button>
+
+            <AnimatePresence>
+              {programsOpen && (
+                <motion.div
+                  variants={DROPDOWN}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  style={{ x: "-50%" }}
+                  className="absolute left-1/2 mt-3 z-10 min-w-[12rem] drop-shadow-xl"
                 >
-                  {member.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </nav>
+                  <motion.div
+                    variants={WIPE}
+                    className="bg-[#20242A] border border-[#8E1717] rounded-xl overflow-hidden"
+                  >
+                    <motion.div variants={ITEM}>
+                      <Link
+                        to="https://book.stripe.com/4gM3cvg1yf2B1PZ9nJ3cc01"
+                        className={ITEM_LINK}
+                      >
+                        Summer Camp
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      variants={ITEM}
+                      className="border-t border-[#8E1717]/30"
+                    >
+                      <a
+                        href="https://scout.bergsmaservers.win"
+                        className={ITEM_LINK}
+                      >
+                        Scouting
+                      </a>
+                    </motion.div>
+                    <motion.div
+                      variants={ITEM}
+                      className="border-t border-[#8E1717]/30"
+                    >
+                      <a href="fundraisers.html" className={ITEM_LINK}>
+                        Fundraisers
+                      </a>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <Link to="/SponsorUs" className={PILL}>
+            Sponsor Us
+          </Link>
+
+          {/* Donate: filled so it reads as the main action */}
+          <a
+            href="https://buy.stripe.com/14AdR95mUbQp9ir1Vh3cc00"
+            className="border border-[#8E1717] bg-[#8E1717] hover:bg-[#C62828] hover:border-[#C62828] text-[#F5F5F5] px-3 sm:px-5 py-1 rounded-full uppercase tracking-wider transition-all duration-300 text-xs sm:text-sm font-semibold shadow-md"
+          >
+            Donate
+          </a>
+        </nav>
+      </MotionConfig>
 
       <style>{`
         @keyframes fadeInDown {
