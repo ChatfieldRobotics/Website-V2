@@ -2,9 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-
-const PILL =
-  "border border-[#8E1717] bg-transparent hover:bg-[#C62828]/10 hover:border-[#C62828] text-[#F5F5F5] px-3 sm:px-5 py-1 rounded-full uppercase tracking-wider transition-all duration-300 text-xs sm:text-sm font-semibold";
+import logo from "../assets/logos/Resonance.png";
+import "../Main.css";
 
 // Same spring as the homepage rows: stiff, slightly under-damped
 const SPRING = { type: "spring", stiffness: 300, damping: 14, mass: 0.5 };
@@ -32,8 +31,75 @@ const ITEM = {
   show: { x: 0, opacity: 1, transition: SPRING },
 };
 
-const ITEM_LINK =
-  "block px-4 py-2 text-[#F5F5F5] hover:bg-[#8E1717] transition-colors font-medium text-center";
+const CSS = `
+header.site-header {
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+}
+
+.site-header .nav-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: clamp(1rem, 3vw, 2.5rem);
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.site-header .nav-row .nav-brand {
+  display: flex;
+  justify-content: center;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.site-header .nav-row .nav-side {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+}
+
+.site-header .nav-row .nav-side--left {
+  justify-content: flex-end;
+}
+
+.site-header .nav-row .nav-side--right {
+  justify-content: flex-start;
+}
+
+.site-header .nav-pill {
+  padding: 0.6rem 1.1rem;
+  border-radius: 0.5rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.site-header .nav-menu-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+  .site-header .nav-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 0.75rem;
+  }
+
+  .site-header .nav-row .nav-side {
+    display: contents;
+  }
+
+  .site-header .nav-row .nav-brand {
+    flex-basis: 100%;
+    order: -1;
+  }
+}
+`;
 
 export default function NavBar() {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -59,122 +125,93 @@ export default function NavBar() {
   const programsOpen = openDropdown === "programs";
 
   return (
-    <header
-      ref={navRef}
-      className="fixed top-0 left-0 w-full bg-[#10151D] bg-opacity-95 border-b border-[#8E1717] shadow-[0_4px_15px_rgba(0,0,0,0.5)] z-50 font-['Rajdhani',_sans-serif] pb-3 pt-2 sm:pt-4"
-      aria-label="Main navigation"
-    >
-      {/* Top Tier: Title */}
-      <div className="max-w-7xl mx-auto flex items-center justify-center px-4 sm:px-6 mb-3 sm:mb-4">
-        <Link
-          to="/"
-          className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide transform transition duration-200 flex gap-2"
-          aria-current="page"
-        >
-          <span className="text-[#F5F5F5]">CHATFIELD</span>
-          <span className="text-[#C62828]">ROBOTICS</span>
-        </Link>
-      </div>
+    <>
+      <style>{CSS}</style>
 
-      {/* Bottom Tier: Navigation Links */}
-      <MotionConfig reducedMotion="user">
-        <nav className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 px-2">
-          <a
-            href="https://calendar.google.com/calendar/u/0/embed?color=%23800020&color=%23c0c0c0&src=8ddebaee3e9e7b072ea36083c54675d03e54b2029075ff497f444ff3318a793e@group.calendar.google.com&src=chatfieldrobotics@gmail.com"
-            target="_blank"
-            rel="noreferrer"
-            className={PILL}
-          >
-            Calendar
-          </a>
-
-          {/* Programs Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("programs")}
-              className={PILL}
-              aria-expanded={programsOpen}
-              aria-haspopup="true"
-            >
-              Programs{" "}
-              <motion.span
-                animate={{ rotate: programsOpen ? 180 : 0 }}
-                transition={SPRING}
-                className="inline-block text-[#C62828] ml-1"
-              >
-                ▾
-              </motion.span>
-            </button>
-
-            <AnimatePresence>
-              {programsOpen && (
-                <motion.div
-                  variants={DROPDOWN}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                  style={{ x: "-50%" }}
-                  className="absolute left-1/2 mt-3 z-10 min-w-[12rem] drop-shadow-xl"
+      <header ref={navRef} className="site-header" aria-label="Main navigation">
+        <MotionConfig reducedMotion="user">
+          <nav className="nav-row">
+            <div className="nav-side nav-side--left">
+              {/* Programs Dropdown */}
+              <div className="nav-dropdown">
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown("programs")}
+                  className="nav-pill"
+                  aria-expanded={programsOpen}
+                  aria-haspopup="true"
                 >
-                  <motion.div
-                    variants={WIPE}
-                    className="bg-[#20242A] border border-[#8E1717] rounded-xl overflow-hidden"
+                  Programs{" "}
+                  <motion.span
+                    animate={{ rotate: programsOpen ? 180 : 0 }}
+                    transition={SPRING}
+                    className="nav-caret"
                   >
-                    <motion.div variants={ITEM}>
-                      <Link
-                        to="https://book.stripe.com/4gM3cvg1yf2B1PZ9nJ3cc01"
-                        className={ITEM_LINK}
-                      >
-                        Summer Camp
-                      </Link>
-                    </motion.div>
+                    ▾
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {programsOpen && (
                     <motion.div
-                      variants={ITEM}
-                      className="border-t border-[#8E1717]/30"
+                      variants={DROPDOWN}
+                      initial="hidden"
+                      animate="show"
+                      exit="exit"
+                      style={{ x: "-50%" }}
+                      className="nav-menu"
                     >
-                      <a
-                        href="https://scout.bergsmaservers.win"
-                        className={ITEM_LINK}
-                      >
-                        Scouting
-                      </a>
+                      <motion.div variants={WIPE} className="nav-menu-panel">
+                        <motion.div variants={ITEM} className="nav-menu-item">
+                          <Link
+                            to="https://book.stripe.com/4gM3cvg1yf2B1PZ9nJ3cc01"
+                            className="nav-menu-link"
+                          >
+                            Summer Camp
+                          </Link>
+                        </motion.div>
+                        <motion.div variants={ITEM} className="nav-menu-item">
+                          <a
+                            href="https://scout.bergsmaservers.win"
+                            className="nav-menu-link"
+                          >
+                            Scouting
+                          </a>
+                        </motion.div>
+                        <motion.div variants={ITEM} className="nav-menu-item">
+                          <a href="fundraisers.html" className="nav-menu-link">
+                            Fundraisers
+                          </a>
+                        </motion.div>
+                      </motion.div>
                     </motion.div>
-                    <motion.div
-                      variants={ITEM}
-                      className="border-t border-[#8E1717]/30"
-                    >
-                      <a href="fundraisers.html" className={ITEM_LINK}>
-                        Fundraisers
-                      </a>
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-          <Link to="/SponsorUs" className={PILL}>
-            Sponsor Us
-          </Link>
+              <Link to="/SponsorUs" className="nav-pill">
+                Sponsor Us
+              </Link>
+            </div>
 
-          {/* Donate: filled so it reads as the main action */}
-          <a
-            href="https://buy.stripe.com/14AdR95mUbQp9ir1Vh3cc00"
-            className="border border-[#8E1717] bg-[#8E1717] hover:bg-[#C62828] hover:border-[#C62828] text-[#F5F5F5] px-3 sm:px-5 py-1 rounded-full uppercase tracking-wider transition-all duration-300 text-xs sm:text-sm font-semibold shadow-md"
-          >
-            Donate
-          </a>
-        </nav>
-      </MotionConfig>
+            <div className="nav-brand">
+              <Link to="/" className="nav-brand-link">
+                <img src={logo} alt="Chatfield Robotics" className="nav-logo" />
+              </Link>
+            </div>
 
-      <style>{`
-        @keyframes fadeInDown {
-          from { opacity: 0; transform: translateY(-16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        header { animation: fadeInDown 0.45s ease-out 0s both; }
-      `}</style>
-    </header>
+            <div className="nav-side nav-side--right">
+              {/* Donate: filled so it reads as the main action */}
+              <a
+                href="https://buy.stripe.com/14AdR95mUbQp9ir1Vh3cc00"
+                className="nav-pill nav-pill--filled"
+              >
+                Donate
+              </a>
+            </div>
+          </nav>
+        </MotionConfig>
+      </header>
+    </>
   );
 }

@@ -1,658 +1,439 @@
 import "@splidejs/react-splide/css";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import "../Main.css";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
-  AnimatePresence,
-  backOut,
+  animate,
   motion,
+  useInView,
   useReducedMotion,
   useScroll,
-  useSpring,
   useTransform,
 } from "framer-motion";
 import SponsorScroller from "../components/sponsorSlider";
 
-/* =========================
-   CONFIG
-========================= */
-
 const TOPBAR_HEIGHT_FALLBACK = 120;
 
-// Lower damping = more rebound (~25 = none)
-const SMOOTH = { stiffness: 300, damping: 14, mass: 0.5, restDelta: 0.0005 };
+// Cancels any space the layout leaves above the page so the hero starts at the very top.
+const PULL_UP_TO_TOP = true;
 
-// Slide-ins overshoot slightly before settling
-const LAND = { ease: backOut };
-
-// A box growing into the detail popup (and back)
-const CARD_SPRING = { type: "spring", stiffness: 260, damping: 22, mass: 0.7 };
-
-// How much bigger the sponsor scroller is drawn
-const SPONSOR_SCALE = 1.25;
+// Swap these for your own photos (a path in /public or an imported file).
+// Set one to null to turn that backdrop off.
+const HERO_BG = "/images/backgrounds/field.webp";
+const ABOUT_BG = "/images/about-bg.jpg";
+const LOGO = "/images/logos/resonance-number.webp";
 
 const ABOUT_TEXT =
   "Chatfield Robotics was founded in 2018 to participate in the FIRST Tech Challenge (FTC), and now competes in FIRST Robotics Competition (FRC) as Team 9068 The Chargers. The team is student-run and operates out of Chatfield Senior High School, striving to prepare students for excellence in STEM through the development of industry-level skills in engineering, programming, marketing, and leadership fields. Chatfield Robotics also seeks to inspire a passion for STEM in the community via numerous community outreach programs, including cooperation with local organizations and STEM summer camps for middle school students.";
 
-// `details` is placeholder copy: replace it with the team's real descriptions
-const INFO_ROWS = [
-  {
-    title: "Engineering",
-    text: "Students design, build, and test our competition robot, picking up industry-level skills in mechanical and electrical engineering along the way.",
-    details: [
-      "The engineering subteam takes the robot from first sketch to competition. Members learn CAD, design reviews, machining, assembly, and wiring, then test and improve the robot between matches.",
-      "No experience is required. New members are paired with returning students who teach the tools and shop safety.",
-    ],
-    art: "robot",
-    image: null,
-  },
-  {
-    title: "Programming",
-    text: "Our programmers write the code that drives the robot, from autonomous routines to driver controls and vision.",
-    details: [
-      "The programming subteam writes the software that makes the robot move: driver controls, autonomous routines, and sensor and vision systems.",
-      "Students practice teamwork habits used in industry, like version control and code review, and test their code before it ever reaches the robot.",
-    ],
-    image: null,
-  },
-  {
-    title: "Marketing & Leadership",
-    text: "The team is student-run, so students also handle outreach, sponsorship, branding, and the leadership that keeps the season moving.",
-    details: [
-      "This subteam runs the business side of the team: sponsorship outreach, social media, branding, the team website, and event planning.",
-      "Because the team is student-run, members also build leadership skills by organizing projects, managing deadlines, and representing the team to the community.",
-    ],
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHj0r68jZH4eo3fYSF4w2kuacrnLWu69OP644HsnhNkw&s=10,",
-  },
-  {
-    title: "Community Outreach",
-    text: "We work with local organizations and run STEM summer camps for middle school students to share our passion for STEM.",
-    details: [
-      "Outreach connects the team with its community through demonstrations, partnerships with local organizations, and STEM summer camps for middle school students.",
-      "Camps and events give younger students a hands-on first look at robotics, and give our members a chance to teach what they have learned.",
-    ],
-    image: null,
-  },
+const STATS = [
+  { value: 50, suffix: "+", label: "Members educated" },
+  { value: 2, suffix: "×", label: "World Championship attendee" },
+  { value: 1, suffix: "×", label: "Tournament winner, and counting" },
+  { value: 7, suffix: "×", label: "Tournament competitor" },
 ];
 
-/* =========================
-   ROBOT
+const CSS = `
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&display=swap");
 
-   A square FRC robot seen from a corner, parallel to the ground: rounded
-   bumper base, clear box frame, two intake rollers. Real 3D points are
-   projected each frame, and scroll turns the robot a little.
-========================= */
-
-const DEG = Math.PI / 180;
-const CAM = { height: 1.7, dist: 8 };
-
-const PARTS = {
-  frame: { half: 0.82, r: 0.26, y0: 0.15, y1: 1.25 },
-  bumper: { half: 1, r: 0.34, y0: 0.15, y1: 0.46 },
-};
-
-const ROLLERS = [
-  [
-    [-0.5, 0.74, -0.62],
-    [0.5, 0.74, -0.62],
-  ],
-  [
-    [0.62, 1, -0.5],
-    [0.62, 1, 0.5],
-  ],
-];
-
-function ring(half, r, n = 12) {
-  const c = half - r;
-  const out = [];
-  for (const [cx, cz, a0] of [
-    [c, c, 0],
-    [-c, c, 90],
-    [-c, -c, 180],
-    [c, -c, 270],
-  ]) {
-    for (let i = 0; i <= n; i++) {
-      const a = (a0 + (90 * i) / n) * DEG;
-      out.push([cx + r * Math.cos(a), cz + r * Math.sin(a)]);
-    }
-  }
-  return out;
+.hm {
+  --black: #080808;
+  --red: #B5121B;
+  --deep: #6E0B12;
+  --silver: #BFC3C7;
+  --white: #F5F5F5;
+  --line: rgba(191, 195, 199, 0.16);
+  --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --gutter: clamp(1.25rem, 6vw, 6rem);
+  background: var(--black);
+  color: var(--white);
+  overflow-x: clip;
 }
 
-function project([x, y, z], yaw) {
-  const a = yaw * DEG;
-  const zc = -x * Math.sin(a) + z * Math.cos(a) + CAM.dist;
-  return [(x * Math.cos(a) + z * Math.sin(a)) / zc, (CAM.height - y) / zc];
+.hm-par {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  scroll-margin-top: 100px;
 }
 
-function hull(points) {
-  const pts = points.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  const cross = (o, a, b) =>
-    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
-  const lower = [];
-  for (const p of pts) {
-    while (
-      lower.length >= 2 &&
-      cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0
-    )
-      lower.pop();
-    lower.push(p);
-  }
-  const upper = [];
-  for (let i = pts.length - 1; i >= 0; i--) {
-    const p = pts[i];
-    while (
-      upper.length >= 2 &&
-      cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0
-    )
-      upper.pop();
-    upper.push(p);
-  }
-  upper.pop();
-  lower.pop();
-  return lower.concat(upper);
+.hm-par-bg,
+.hm-par-dim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: -1;
 }
 
-function rawScene(yaw) {
-  const out = {};
-  for (const [name, part] of Object.entries(PARTS)) {
-    const plan = ring(part.half, part.r);
-    const bottom = plan.map(([x, z]) => project([x, part.y0, z], yaw));
-    const top = plan.map(([x, z]) => project([x, part.y1, z], yaw));
-    const c = part.half - part.r;
-    const cx = c + part.r * Math.cos(315 * DEG);
-    const cz = -c + part.r * Math.sin(315 * DEG);
-    out[name] = {
-      hull: hull(bottom.concat(top)),
-      top,
-      corner: [
-        project([cx, part.y0, cz], yaw),
-        project([cx, part.y1, cz], yaw),
-      ],
-    };
-  }
-  out.rollers = ROLLERS.map(([a, b]) => [project(a, yaw), project(b, yaw)]);
-  return out;
+.hm-par-bg {
+  top: -20%;
+  bottom: -20%;
+  background-color: var(--black);
+  background-image: var(--img);
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
 }
 
-// Scale and center once (at the straight-on corner view) so rotating never rescales
-const FIT = (() => {
-  const base = rawScene(45);
-  const pts = [...base.frame.hull, ...base.bumper.hull];
-  const xs = pts.map((p) => p[0]);
-  const ys = pts.map((p) => p[1]);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-  const s = Math.min(300 / (maxX - minX), 200 / (maxY - minY));
-  return {
-    s,
-    ox: 200 - ((minX + maxX) / 2) * s,
-    oy: 150 - ((minY + maxY) / 2) * s,
-  };
-})();
-
-function toPath(points, close) {
-  const d = points
-    .map(
-      ([x, y], i) =>
-        `${i ? "L" : "M"}${(x * FIT.s + FIT.ox).toFixed(1)} ${(y * FIT.s + FIT.oy).toFixed(1)}`,
-    )
-    .join(" ");
-  return close ? `${d} Z` : d;
+.hm-par-dim {
+  top: 0;
+  bottom: 0;
+  background: rgba(8, 8, 8, var(--dim));
 }
 
-function buildScene(yaw) {
-  const raw = rawScene(yaw);
-  const part = (p) => ({
-    hull: toPath(p.hull, true),
-    top: toPath(p.top, true),
-    corner: toPath(p.corner, false),
-  });
-  return {
-    frame: part(raw.frame),
-    bumper: part(raw.bumper),
-    rollers: raw.rollers.map((r) => toPath(r, false)),
-  };
+.hm-bar {
+  width: 7rem;
+  height: 6px;
+  background: var(--red);
+  border-radius: 3px;
 }
 
-function RobotArt({ progress, live }) {
-  const on = (style) => (live ? style : undefined);
+.hm-hero {
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  padding: calc(var(--topbar) + 2rem) var(--gutter) clamp(5rem, 16vh, 9rem);
+  background: var(--black);
+}
 
-  const scene = useTransform(progress, (v) =>
-    buildScene(live ? 45 + (v - 0.5) * 40 : 45),
+.hm-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  height: clamp(9rem, 28vh, 16rem);
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 8, 8, 0) 0%,
+    rgba(8, 8, 8, 0.35) 40%,
+    rgba(8, 8, 8, 0.8) 75%,
+    #080808 100%
   );
-  const frameHull = useTransform(scene, (s) => s.frame.hull);
-  const frameTop = useTransform(scene, (s) => s.frame.top);
-  const frameCorner = useTransform(scene, (s) => s.frame.corner);
-  const bumperHull = useTransform(scene, (s) => s.bumper.hull);
-  const bumperTop = useTransform(scene, (s) => s.bumper.top);
-  const bumperCorner = useTransform(scene, (s) => s.bumper.corner);
-  const rollerA = useTransform(scene, (s) => s.rollers[0]);
-  const rollerB = useTransform(scene, (s) => s.rollers[1]);
-
-  const frameDraw = useTransform(progress, [0.06, 0.34], [0, 1]);
-  const frameFill = useTransform(progress, [0.2, 0.4], [0, 0.16]);
-  const rollerDraw = useTransform(progress, [0.3, 0.5], [0, 1]);
-  const rollerShow = useTransform(progress, [0.3, 0.33], [0, 1]);
-  const bumperDraw = useTransform(progress, [0.16, 0.42], [0, 1]);
-  const bumperFill = useTransform(progress, [0.36, 0.52], [0, 1]);
-
-  return (
-    <svg viewBox="0 0 400 300" className="w-full h-full" aria-hidden="true">
-      <g fill="none" stroke="#D9A441" strokeLinejoin="round">
-        <motion.path
-          d={frameHull}
-          fill="#C62828"
-          fillOpacity={0.16}
-          strokeWidth="3"
-          style={on({ pathLength: frameDraw, fillOpacity: frameFill })}
-        />
-        <motion.path
-          d={frameTop}
-          strokeWidth="2"
-          strokeOpacity=".7"
-          style={on({ pathLength: frameDraw })}
-        />
-        <motion.path
-          d={frameCorner}
-          strokeWidth="2"
-          strokeOpacity=".7"
-          style={on({ pathLength: frameDraw })}
-        />
-
-        {[rollerA, rollerB].map((d, i) => (
-          <motion.g key={i} style={on({ opacity: rollerShow })}>
-            <motion.path
-              d={d}
-              strokeWidth="13"
-              strokeLinecap="round"
-              style={on({ pathLength: rollerDraw })}
-            />
-            <motion.path
-              d={d}
-              stroke="#C62828"
-              strokeWidth="7"
-              strokeLinecap="round"
-              style={on({ pathLength: rollerDraw })}
-            />
-          </motion.g>
-        ))}
-
-        <motion.path
-          d={bumperHull}
-          fill="#C62828"
-          fillOpacity={1}
-          strokeWidth="3"
-          style={on({ pathLength: bumperDraw, fillOpacity: bumperFill })}
-        />
-        <motion.path
-          d={bumperTop}
-          strokeWidth="2"
-          strokeOpacity=".7"
-          style={on({ pathLength: bumperDraw })}
-        />
-        <motion.path
-          d={bumperCorner}
-          strokeWidth="2"
-          strokeOpacity=".7"
-          style={on({ pathLength: bumperDraw })}
-        />
-      </g>
-    </svg>
-  );
+  pointer-events: none;
 }
 
-/* =========================
-   GEARS
-========================= */
+.hm-hero-inner {
+  max-width: 72rem;
+}
 
-function gearPath(teeth, rOuter, rRoot, rHole) {
-  const step = (Math.PI * 2) / teeth;
-  const pt = (r, a) =>
-    `${(r * Math.cos(a)).toFixed(2)} ${(r * Math.sin(a)).toFixed(2)}`;
+.hm-kicker {
+  margin: 0 0 1rem;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--silver);
+}
 
-  let d = "";
-  for (let i = 0; i < teeth; i++) {
-    const a = i * step;
-    d += `${i === 0 ? "M" : "L"} ${pt(rRoot, a)} `;
-    d += `L ${pt(rOuter, a + step * 0.15)} `;
-    d += `L ${pt(rOuter, a + step * 0.45)} `;
-    d += `L ${pt(rRoot, a + step * 0.6)} `;
+.hm-title {
+  margin: 0;
+}
+
+.hm-logo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: clamp(8rem, 26vh, 15rem);
+  object-fit: contain;
+  object-position: left center;
+}
+
+.hm-hero .hm-bar {
+  margin: clamp(1.25rem, 3vh, 2rem) 0;
+}
+
+.hm-tagline {
+  margin: 0;
+  max-width: 34rem;
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  line-height: 1.5;
+}
+
+.hm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.hm-btn {
+  display: inline-block;
+  padding: 0.85rem 1.6rem;
+  border: 2px solid var(--red);
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.hm-btn--solid {
+  background: var(--red);
+  color: var(--white);
+}
+
+.hm-btn--solid:hover {
+  background: var(--deep);
+  border-color: var(--deep);
+}
+
+.hm-btn--line {
+  border-color: var(--silver);
+  color: var(--white);
+}
+
+.hm-btn--line:hover {
+  border-color: var(--white);
+  background: rgba(245, 245, 245, 0.1);
+}
+
+.hm-btn:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+
+.hm-stats {
+  border-bottom: 1px solid var(--line);
+}
+
+.hm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 76rem;
+  margin: 0 auto;
+}
+
+.hm-stat {
+  padding: clamp(1.75rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+  border-left: 1px solid var(--line);
+}
+
+.hm-stat:first-child {
+  border-left: 0;
+}
+
+.hm-stat-num {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2.75rem, 6vw, 4.75rem);
+  line-height: 1;
+}
+
+.hm-stat-label {
+  margin-top: 0.5rem;
+  color: var(--silver);
+  line-height: 1.35;
+}
+
+.hm-about {
+  padding: clamp(5rem, 14vw, 10rem) 0;
+}
+
+.hm-about-inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.hm-h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2.75rem, 8vw, 6rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.hm-about .hm-bar {
+  margin: 1.5rem 0 2rem;
+}
+
+.hm-about-text {
+  margin: 0;
+  max-width: 62ch;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.7;
+}
+
+.hm-sponsors {
+  padding: clamp(3rem, 8vw, 6rem) var(--gutter);
+  scroll-margin-top: 100px;
+}
+
+@media (max-width: 720px) {
+  .hm-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  d += "Z ";
-  d += `M ${rHole} 0 A ${rHole} ${rHole} 0 1 0 ${-rHole} 0 `;
-  d += `A ${rHole} ${rHole} 0 1 0 ${rHole} 0 Z`;
-  return d;
+  .hm-stat:nth-child(odd) {
+    border-left: 0;
+  }
+  .hm-stat:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
 }
+`;
 
-const BIG_GEAR = gearPath(16, 98, 84, 22);
-const SMALL_GEAR = gearPath(8, 51.5, 37.5, 12);
-
-function GearArt({ big, small, live }) {
-  return (
-    <svg
-      viewBox="0 0 400 300"
-      preserveAspectRatio="xMidYMid slice"
-      className="w-full h-full"
-      aria-hidden="true"
-    >
-      <g transform="translate(150 195)">
-        <g transform="rotate(3.25)">
-          <motion.g
-            style={
-              live
-                ? {
-                    rotate: big,
-                    transformBox: "fill-box",
-                    transformOrigin: "center",
-                  }
-                : undefined
-            }
-          >
-            <path d={BIG_GEAR} fill="#C62828" fillRule="evenodd" />
-          </motion.g>
-        </g>
-      </g>
-
-      <g transform="translate(264.7 114.7)">
-        <g transform="rotate(19)">
-          <motion.g
-            style={
-              live
-                ? {
-                    rotate: small,
-                    transformBox: "fill-box",
-                    transformOrigin: "center",
-                  }
-                : undefined
-            }
-          >
-            <path d={SMALL_GEAR} fill="#D9A441" fillRule="evenodd" />
-          </motion.g>
-        </g>
-      </g>
-    </svg>
-  );
-}
-
-/* =========================
-   INFO ROW
-========================= */
-
-function InfoRow({ index, title, text, image, art, onOpen }) {
+function ParallaxSection({
+  id,
+  image,
+  className = "",
+  shift = 12,
+  dim = 0.55,
+  children,
+}) {
   const ref = useRef(null);
   const reduceMotion = useReducedMotion();
-  const live = !reduceMotion;
-
-  // Odd rows put the box on the right and the text on the left
-  const flip = index % 2 === 1;
-  const dir = flip ? -1 : 1;
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const p = useSpring(scrollYProgress, SMOOTH);
-
-  const boxX = useTransform(p, [0, 0.35], [-90 * dir, 0], LAND);
-  const boxClip = useTransform(
-    p,
-    [0, 0.35],
-    [
-      flip
-        ? "inset(0% 0% 0% 100% round 1rem)"
-        : "inset(0% 100% 0% 0% round 1rem)",
-      "inset(0% 0% 0% 0% round 1rem)",
-    ],
-  );
-
-  const titleX = useTransform(p, [0.05, 0.38], [110 * dir, 0], LAND);
-  const titleOpacity = useTransform(p, [0.05, 0.3], [0, 1]);
-  const barScale = useTransform(p, [0.25, 0.45], [0, 1]);
-  const bodyX = useTransform(p, [0.1, 0.42], [110 * dir, 0], LAND);
-  const bodyOpacity = useTransform(p, [0.1, 0.35], [0, 1]);
-
-  const bigAngle = useTransform(p, [0, 1], [-120 * dir, 120 * dir]);
-  const smallAngle = useTransform(p, [0, 1], [240 * dir, -240 * dir]);
-
-  const imgY = useTransform(p, [0, 1], ["-8%", "8%"]);
+  const y = useTransform(scrollYProgress, [0, 1], [`-${shift}%`, `${shift}%`]);
 
   return (
-    <motion.div
-      ref={ref}
-      layoutId={`card-${index}`}
-      transition={CARD_SPRING}
-      style={{ borderRadius: 24 }}
-      role="button"
-      tabIndex={0}
-      aria-haspopup="dialog"
-      onClick={onOpen}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onOpen();
-        }
-      }}
-      className={`relative flex flex-col ${
-        flip ? "md:flex-row-reverse" : "md:flex-row"
-      } md:items-center gap-6 md:gap-10 bg-[#20242A] hover:bg-[#262B33] transition-colors cursor-pointer p-5 md:p-8 overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D9A441]`}
-    >
-      <motion.div
-        style={live ? { x: boxX, clipPath: boxClip } : undefined}
-        className="w-full md:w-2/5 shrink-0 aspect-[4/3] rounded-2xl overflow-hidden bg-[#8E1717] border border-[#C62828] will-change-transform"
-      >
-        {art === "robot" ? (
-          <RobotArt progress={p} live={live} />
-        ) : image ? (
-          <motion.img
-            src={image}
-            alt={title}
-            style={live ? { y: imgY, scale: 1.2 } : undefined}
-            className="w-full h-full object-cover"
+    <section ref={ref} id={id} className={`hm-par ${className}`}>
+      {image && (
+        <>
+          <motion.div
+            aria-hidden="true"
+            className="hm-par-bg"
+            style={{ "--img": `url("${image}")`, y: reduceMotion ? 0 : y }}
           />
-        ) : (
-          <GearArt big={bigAngle} small={smallAngle} live={live} />
-        )}
-      </motion.div>
+          <div
+            aria-hidden="true"
+            className="hm-par-dim"
+            style={{ "--dim": dim }}
+          />
+        </>
+      )}
+      {children}
+    </section>
+  );
+}
 
-      <div className="flex-1">
-        <motion.h2
-          style={live ? { x: titleX, opacity: titleOpacity } : undefined}
-          className="text-2xl md:text-3xl font-semibold text-[#D9A441] mb-3"
-        >
-          {title}
-        </motion.h2>
-        <motion.div
-          style={live ? { scaleX: barScale, originX: 0 } : undefined}
-          className="h-1 w-16 rounded-full bg-[#C62828] mb-4"
-        />
-        <motion.p
-          style={live ? { x: bodyX, opacity: bodyOpacity } : undefined}
-          className="text-[#F5F5F5]/85 leading-relaxed"
-        >
-          {text}
-        </motion.p>
-        <span className="mt-4 inline-block text-sm font-semibold text-[#D9A441]">
-          Learn more →
-        </span>
-      </div>
+function Rise({ delay = 0, className, children }) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <motion.div
+      className={className}
+      initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
     </motion.div>
   );
 }
 
-/* =========================
-   DETAIL MODAL
-========================= */
-
-function DetailModal({ index, row, onClose }) {
-  const dialogRef = useRef(null);
+function CountUp({ value, suffix }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const reduceMotion = useReducedMotion();
-  const spring = reduceMotion ? { duration: 0 } : CARD_SPRING;
+  const [n, setN] = useState(0);
 
   useEffect(() => {
-    const previous = document.activeElement;
-    dialogRef.current?.focus();
-    document.documentElement.style.overflow = "hidden";
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.documentElement.style.overflow = "";
-      previous?.focus?.();
-    };
-  }, [onClose]);
+    if (!inView || reduceMotion) return;
+    const controls = animate(0, value, {
+      duration: 1.4,
+      ease: "easeOut",
+      onUpdate: (v) => setN(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [inView, value, reduceMotion]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <motion.div
-        className="absolute inset-0 bg-[#10151D]/60 backdrop-blur-md"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      />
-
-      <motion.div
-        ref={dialogRef}
-        layoutId={`card-${index}`}
-        transition={spring}
-        style={{ borderRadius: 24 }}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={`detail-title-${index}`}
-        tabIndex={-1}
-        className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto overscroll-contain bg-[#20242A] border border-[#8E1717] shadow-2xl outline-none p-6 md:p-10"
-      >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: { delay: reduceMotion ? 0 : 0.18, duration: 0.2 },
-          }}
-          exit={{ opacity: 0, transition: { duration: 0.08 } }}
-        >
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="absolute top-4 right-4 h-10 w-10 rounded-full border border-[#8E1717] text-[#F5F5F5] hover:bg-[#C62828]/20 hover:border-[#C62828] transition-colors"
-          >
-            ✕
-          </button>
-
-          <h2
-            id={`detail-title-${index}`}
-            className="text-3xl md:text-4xl font-semibold text-[#D9A441] mb-3 pr-12"
-          >
-            {row.title}
-          </h2>
-          <div className="h-1 w-16 rounded-full bg-[#C62828] mb-6" />
-
-          <p className="text-xl leading-relaxed text-[#F5F5F5] mb-5">
-            {row.text}
-          </p>
-          {row.details.map((paragraph) => (
-            <p
-              key={paragraph}
-              className="text-[#F5F5F5]/80 leading-relaxed mb-4 last:mb-0"
-            >
-              {paragraph}
-            </p>
-          ))}
-        </motion.div>
-      </motion.div>
-    </div>
+    <span ref={ref}>
+      {reduceMotion ? value : n}
+      {suffix}
+    </span>
   );
 }
 
-/* =========================
-   ABOUT US WORD REVEAL
-========================= */
-
-function RevealText({ text }) {
-  const reduceMotion = useReducedMotion();
-  if (reduceMotion) return text;
-
-  return text.split(" ").map((word, i) => (
-    <Fragment key={i}>
-      <motion.span
-        className="inline-block"
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25 + i * 0.015, duration: 0.4, ease: "easeOut" }}
-      >
-        {word}
-      </motion.span>{" "}
-    </Fragment>
-  ));
-}
-
 export default function Home() {
-  const [openIndex, setOpenIndex] = useState(null);
-  const close = useCallback(() => setOpenIndex(null), []);
+  const rootRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const el = rootRef.current;
+    if (!PULL_UP_TO_TOP || !el) return;
+    const fit = () => {
+      el.style.marginTop = "0px";
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      el.style.marginTop = `${-Math.max(0, top)}px`;
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => {
+      window.removeEventListener("resize", fit);
+      el.style.marginTop = "";
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#10151D] text-[#F5F5F5]">
-      <style>{`
-        html, body, #root { scrollbar-width: none; -ms-overflow-style: none; }
-        html::-webkit-scrollbar,
-        body::-webkit-scrollbar,
-        #root::-webkit-scrollbar { display: none; width: 0; height: 0; }
-      `}</style>
+    <div
+      ref={rootRef}
+      className="hm"
+      style={{ "--topbar": `${TOPBAR_HEIGHT_FALLBACK}px` }}
+    >
+      <style>{CSS}</style>
 
-      <main className="flex flex-col">
-        <div style={{ height: TOPBAR_HEIGHT_FALLBACK }} />
-
-        <section className="flex items-center justify-center px-4">
-          <div className="bg-[#20242A] border-l-4 border-[#C62828] w-4/5 max-w-6xl rounded-lg p-6">
-            <h2 className="w-full text-center text-[#D9A441] text-2xl underline mb-4">
-              About Us
-            </h2>
-            <p className="text-justify text-[#F5F5F5] font-light">
-              <RevealText text={ABOUT_TEXT} />
+      <ParallaxSection className="hm-hero" image={HERO_BG} dim={0.5}>
+        <div className="hm-hero-inner">
+          <Rise delay={0.1}>
+            <h1 className="hm-title">
+              <img className="hm-logo" src={LOGO} alt="Chatfield Robotics" />
+            </h1>
+          </Rise>
+          <Rise delay={0.2}>
+            <div className="hm-bar" />
+          </Rise>
+          <Rise delay={0.3}>
+            <p className="hm-tagline">
+              A student-run FIRST Robotics Competition team from Chatfield
+              Senior High School.
             </p>
-          </div>
-        </section>
+          </Rise>
+          <Rise delay={0.4} className="hm-actions">
+            <a className="hm-btn hm-btn--solid" href="#about">
+              About us
+            </a>
+            <a className="hm-btn hm-btn--line" href="#sponsors">
+              Our sponsors
+            </a>
+          </Rise>
+        </div>
+      </ParallaxSection>
 
-        <section className="flex flex-col gap-6 w-4/5 max-w-6xl mx-auto px-0 py-8">
-          {INFO_ROWS.map((row, i) => (
-            <InfoRow
-              key={row.title}
-              index={i}
-              {...row}
-              onOpen={() => setOpenIndex(i)}
-            />
-          ))}
-        </section>
-
-        <section className="w-4/5 max-w-6xl mx-auto pb-12">
-          <div className="bg-[#20242A] rounded-3xl p-6 md:p-8 overflow-hidden">
-            <h2 className="w-full text-center text-[#D9A441] text-2xl md:text-3xl underline mb-2">
-              Proudly Supported By:
-            </h2>
-            <div
-              className="py-8"
-              style={{ transform: `scale(${SPONSOR_SCALE})` }}
-            >
-              <SponsorScroller />
+      <section className="hm-stats">
+        <div className="hm-stats-grid">
+          {STATS.map((s) => (
+            <div key={s.label} className="hm-stat">
+              <div className="hm-stat-num">
+                <CountUp value={s.value} suffix={s.suffix} />
+              </div>
+              <div className="hm-stat-label">{s.label}</div>
             </div>
-          </div>
-        </section>
-      </main>
+          ))}
+        </div>
+      </section>
 
-      <AnimatePresence>
-        {openIndex !== null && (
-          <DetailModal
-            key={openIndex}
-            index={openIndex}
-            row={INFO_ROWS[openIndex]}
-            onClose={close}
-          />
-        )}
-      </AnimatePresence>
+      <ParallaxSection
+        id="about"
+        className="hm-about"
+        image={ABOUT_BG}
+        dim={0.72}
+      >
+        <div className="hm-about-inner">
+          <h2 className="hm-h2">About Us</h2>
+          <div className="hm-bar" />
+          <p className="hm-about-text">{ABOUT_TEXT}</p>
+        </div>
+      </ParallaxSection>
+
+      <section id="sponsors" className="hm-sponsors">
+        <div className="home-sponsors-card">
+          <h2 className="home-sponsors-title">Proudly Supported By:</h2>
+          <div className="home-sponsors-scale">
+            <SponsorScroller />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

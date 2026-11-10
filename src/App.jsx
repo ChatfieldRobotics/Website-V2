@@ -28,11 +28,6 @@ export default function App() {
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Home />} />
-              <Route path="/members" element={<Members />} />
-              <Route path="/programs" element={<Programs />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/upload" element={<Upload />} />
               <Route
                 path="/season2025"
                 element={<SeasonImages season="2025" />}
@@ -41,6 +36,11 @@ export default function App() {
                 path="/season2026"
                 element={<SeasonImages season="2026" />}
               />
+              <Route path="/" element={<Home />} />
+              <Route path="/members" element={<Members />} />
+              <Route path="/programs" element={<Programs />} />
+              <Route path="/donate" element={<Donate />} />
+              <Route path="/upload" element={<Upload />} />
               <Route path="/summerCamp" element={<summerCamp />} />
               <Route path="/sponsorUs" element={<SponsorUs />} />
             </Routes>
